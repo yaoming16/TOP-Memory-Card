@@ -1,0 +1,9 @@
+.selected-section {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem
+}
+
+.centered {
+    margin-bottom: 2rem;
+}

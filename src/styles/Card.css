@@ -1,0 +1,13 @@
+.card-div {
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+    padding: 1rem;
+    border: 2px solid rgb(3, 60, 68);
+    border-radius: 10px;
+}
+
+.card-div h3 {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
