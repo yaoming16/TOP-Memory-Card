@@ -2,11 +2,12 @@ import { useState, useEffect, useRef } from "react";
 
 import AnimeCard from "./components/AnimeCard";
 import SelectionSection from "./components/SelectionSection";
+import CharacterCard from "./components/CharacterCard";
+
+import { fetchAnimeCharacters, fetchAnimesInfo } from "./utils/animeApi";
 
 import "./styles/App.css";
 import "./components/SelectionSection";
-
-const URL_BASE = "https://api.jikan.moe/v4/";
 
 function App() {
   // JIKAN API Anime characters
@@ -17,54 +18,42 @@ function App() {
   const originalAnimeInfo = useRef(null);
   const [animesInfo, setAnimesInfo] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [SelectedAnime, setSelectedAnime] = useState(null);
+  const [selectedAnime, setSelectedAnime] = useState(null);
   const [gameStarted, setGameStarted] = useState(false);
   const [gameStartedError, setGameStartedError] = useState(false);
+  const [animeCharacters, setAnimeCharacters] = useState([]);
+  const [playedCharsIds, setPlayedCharsIds] = useState([]);
+  const [gameResult, setGameResult] = useState(null);
 
-  async function fetcData(url) {
-    try {
-      const res = await fetch(url);
-      const json = await res.json();
-      return json;
-    } catch (err) {
-      console.log(err);
-      return null;
+  function manageClick(playedId) {
+    if (playedCharsIds.some((charId) => charId === playedId)) {
+      setGameResult(-1);
+      setGameStarted(false);
     }
+    
+    setAnimeCharacters((prev) => [...prev, playedId]);
   }
 
+  // fetch anime info on load
   useEffect(() => {
-    async function fetchIds() {
-      setLoading(true);
-      const data = await fetcData(URL_BASE + "top/anime?type=tv");
-      console.log(data.data);
-      if (data) {
-        let formatedAnimeInfo = [];
-        for (let anime of data.data) {
-          formatedAnimeInfo.push({
-            id: anime.mal_id,
-            imageUrl: anime.images.webp.large_image_url,
-            title: anime.title,
-          });
-        }
-        setAnimesInfo(formatedAnimeInfo);
-        originalAnimeInfo.current = formatedAnimeInfo;
-        setLoading(false);
-      }
-    }
-
-    fetchIds();
+    fetchAnimesInfo(setAnimesInfo, setLoading, originalAnimeInfo);
   }, []);
 
+  // After an anime is selected change game start error to false
   useEffect(() => {
-    if (SelectedAnime) {
+    if (selectedAnime) {
       setGameStartedError(false);
     }
-  }, [SelectedAnime]);
+  }, [selectedAnime]);
 
+  // fetch characters from the selected anime after the user clicks the start game button and starts the game
   useEffect(() => {
-    
+    if (selectedAnime && gameStarted) {
+      fetchAnimeCharacters(setLoading, setAnimeCharacters);
+    }
   }, [gameStarted]);
 
+  //return if game is loading
   if (loading) {
     return (
       <main>
@@ -74,35 +63,59 @@ function App() {
     );
   }
 
-  if (!loading && !gameStarted) {
+  // return if
+  if (!loading && !gameStarted && !gameResult) {
     return (
       <main>
         <section className="top-section">
           <h1>Anime memory Card Game</h1>
-          <SelectionSection SelectedAnime={SelectedAnime} setAnimesInfo={setAnimesInfo} originalAnimeInfo={originalAnimeInfo}/>
-          <button onClick={() => {
-            if (SelectedAnime) {
-              setGameStarted(true);
-              setGameStartedError(false);
-            } else {
-              setGameStartedError(true);
-            }
-          }}>Start the game</button>
-          {gameStartedError? <p>Please, select an anime before starting</p> : null}
+          <SelectionSection
+            selectedAnime={selectedAnime}
+            setAnimesInfo={setAnimesInfo}
+            originalAnimeInfo={originalAnimeInfo}
+          />
+          <button
+            onClick={() => {
+              if (selectedAnime) {
+                setGameStarted(true);
+                setGameStartedError(false);
+              } else {
+                setGameStartedError(true);
+              }
+            }}
+          >
+            Start the game
+          </button>
+          {gameStartedError ? (
+            <p>Please, select an anime before starting</p>
+          ) : null}
         </section>
         <section className="cards-section">
           {animesInfo.map((anime) => (
-            <AnimeCard key={anime.id} animeInfo={anime} setSelectedAnime={setSelectedAnime} />
+            <AnimeCard
+              key={`anime-${anime.id}`}
+              animeInfo={anime}
+              setSelectedAnime={manageClick}
+            />
           ))}
         </section>
       </main>
     );
   }
 
-  if (!loading && gameStarted) {
+  if (!loading && gameStarted && !gameResult) {
     return (
       <main>
         <h1>Anime memory Card Game</h1>
+        <section className="cards-section">
+          {animeCharacters.map((char) => (
+            <CharacterCard
+              key={`character-${char.id}`}
+              characterInfo={char}
+              manageClick={setSelectedAnime}
+            />
+          ))}
+        </section>
       </main>
     );
   }

@@ -2,7 +2,7 @@ import AnimeCard from "./AnimeCard";
 
 import "../styles/SelectionSection.css";
 
-function SelectionSection({ SelectedAnime, setAnimesInfo, originalAnimeInfo }) {
+function SelectionSection({ selectedAnime, setAnimesInfo, originalAnimeInfo }) {
 
   function filterInfo(stringToSearch) {
     if (stringToSearch === "") {
@@ -17,7 +17,7 @@ function SelectionSection({ SelectedAnime, setAnimesInfo, originalAnimeInfo }) {
     <section className="selected-section">
       <div className="centered">
         <h3 className="">The selected anime is</h3>
-        {SelectedAnime ? <AnimeCard animeInfo={SelectedAnime} /> : null}
+        {selectedAnime ? <AnimeCard animeInfo={selectedAnime} /> : null}
       </div>
       <div className="centered">
         <label htmlFor="searchBar">Search anime to use in the game</label>
