@@ -32,7 +32,7 @@ export async function fetchAnimesInfo(setAnimesInfo, setLoading, originalAnimeIn
 }
 
 // Function to fetch and save characters info from selected anime in the desired format
-export async function fetchAnimeCharacters(setLoading, setAnimeCharacters) {
+export async function fetchAnimeCharacters(setLoading, setAnimeCharacters, selectedAnime) {
   setLoading(true);
   const data = await fetchData(
     URL_BASE + `anime/${selectedAnime.id}/characters`,
@@ -51,3 +51,12 @@ export async function fetchAnimeCharacters(setLoading, setAnimeCharacters) {
     setLoading(false);
   }
 }
+
+export const getShuffledArray = (array) => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+};

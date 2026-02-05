@@ -30,3 +30,8 @@ h1 {
   grid-template-columns: repeat(auto-fill, 250px);
   gap: 2rem;
 }
+
+.characters-section {
+  grid-template-columns: repeat(auto-fill, 150px);
+  gap: 0.5rem;
+}

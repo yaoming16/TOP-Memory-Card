@@ -2,9 +2,14 @@ import { useState, useEffect, useRef } from "react";
 
 import AnimeCard from "./components/AnimeCard";
 import SelectionSection from "./components/SelectionSection";
-import CharacterCard from "./components/CharacterCard";
+import GameResult from "./components/GameResult";
+import CharactersSection from "./components/CharactersSection";
 
-import { fetchAnimeCharacters, fetchAnimesInfo } from "./utils/animeApi";
+import {
+  fetchAnimeCharacters,
+  fetchAnimesInfo,
+  getShuffledArray,
+} from "./utils/animeApi";
 
 import "./styles/App.css";
 import "./components/SelectionSection";
@@ -29,9 +34,23 @@ function App() {
     if (playedCharsIds.some((charId) => charId === playedId)) {
       setGameResult(-1);
       setGameStarted(false);
+      setPlayedCharsIds([]);
+      return;
     }
-    
-    setAnimeCharacters((prev) => [...prev, playedId]);
+
+    setPlayedCharsIds((prev) => [...prev, playedId]);
+    setAnimeCharacters((prev) => getShuffledArray(prev));
+  }
+
+  function handleGameResultBtn(type) {
+    if (type === "play") {
+      setGameStarted(true);
+      setGameResult(null);
+      return;
+    }
+    if (type === "anime") {
+      setGameResult(null);
+    }
   }
 
   // fetch anime info on load
@@ -49,26 +68,30 @@ function App() {
   // fetch characters from the selected anime after the user clicks the start game button and starts the game
   useEffect(() => {
     if (selectedAnime && gameStarted) {
-      fetchAnimeCharacters(setLoading, setAnimeCharacters);
+      fetchAnimeCharacters(setLoading, setAnimeCharacters, selectedAnime);
     }
   }, [gameStarted]);
 
+  // Check if player won
+  useEffect(() => {
+    if (gameStarted && playedCharsIds.length === animeCharacters.length) {
+      setGameResult(1);
+      setGameStarted(false);
+      setPlayedCharsIds([]);
+    }
+  }, [playedCharsIds]);
+
+  let content;
   //return if game is loading
   if (loading) {
-    return (
-      <main>
-        <h1>Anime memory Card Game</h1>
-        <p>Loading...</p>
-      </main>
-    );
+    content = <p>Loading...</p>;
   }
 
   // return if
   if (!loading && !gameStarted && !gameResult) {
-    return (
-      <main>
+    content = (
+      <>
         <section className="top-section">
-          <h1>Anime memory Card Game</h1>
           <SelectionSection
             selectedAnime={selectedAnime}
             setAnimesInfo={setAnimesInfo}
@@ -95,30 +118,36 @@ function App() {
             <AnimeCard
               key={`anime-${anime.id}`}
               animeInfo={anime}
-              setSelectedAnime={manageClick}
+              setSelectedAnime={setSelectedAnime}
             />
           ))}
         </section>
-      </main>
+      </>
     );
   }
 
   if (!loading && gameStarted && !gameResult) {
-    return (
-      <main>
-        <h1>Anime memory Card Game</h1>
-        <section className="cards-section">
-          {animeCharacters.map((char) => (
-            <CharacterCard
-              key={`character-${char.id}`}
-              characterInfo={char}
-              manageClick={setSelectedAnime}
-            />
-          ))}
-        </section>
-      </main>
+    content = (
+      <CharactersSection
+        manageClick={manageClick}
+        animeCharacters={animeCharacters}
+        playedCharsIds={playedCharsIds}
+      />
     );
   }
+
+  if (gameResult === 1 || gameResult === -1) {
+    content = (
+      <GameResult gameResult={gameResult} handleBtn={handleGameResultBtn} />
+    );
+  }
+
+  return (
+    <main>
+      <h1>Anime Memory Game</h1>
+      {content}
+    </main>
+  );
 }
 
 export default App;
