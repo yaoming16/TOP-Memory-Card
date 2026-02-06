@@ -13,7 +13,11 @@ async function fetchData(url) {
 }
 
 // Function to fetch and save anime info in the desired format
-export async function fetchAnimesInfo(setAnimesInfo, setLoading, originalAnimeInfoRef) {
+export async function fetchAnimesInfo(
+  setAnimesInfo,
+  setLoading,
+  originalAnimeInfoRef,
+) {
   setLoading(true);
   const data = await fetchData(URL_BASE + "top/anime?type=tv");
   if (data) {
@@ -32,31 +36,28 @@ export async function fetchAnimesInfo(setAnimesInfo, setLoading, originalAnimeIn
 }
 
 // Function to fetch and save characters info from selected anime in the desired format
-export async function fetchAnimeCharacters(setLoading, setAnimeCharacters, selectedAnime) {
-  setLoading(true);
+export async function fetchAnimeCharacters(selectedAnime) {
   const data = await fetchData(
     URL_BASE + `anime/${selectedAnime.id}/characters`,
   );
   if (data) {
     let formatedAnimeCharacters = [];
     for (let char of data.data) {
-      console.log(char);
       formatedAnimeCharacters.push({
         id: char.character.mal_id,
         name: char.character.name,
         imageUrl: char.character.images.webp.image_url,
       });
     }
-    setAnimeCharacters(formatedAnimeCharacters);
-    setLoading(false);
+    return formatedAnimeCharacters;
   }
 }
 
 export const getShuffledArray = (array) => {
-    const newArray = [...array];
-    for (let i = newArray.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-    }
-    return newArray;
+  const newArray = [...array];
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  }
+  return newArray;
 };

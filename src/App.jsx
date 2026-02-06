@@ -29,6 +29,7 @@ function App() {
   const [animeCharacters, setAnimeCharacters] = useState([]);
   const [playedCharsIds, setPlayedCharsIds] = useState([]);
   const [gameResult, setGameResult] = useState(null);
+  const allAnimeCharacters = useRef([]);
 
   function manageClick(playedId) {
     if (playedCharsIds.some((charId) => charId === playedId)) {
@@ -38,8 +39,23 @@ function App() {
       return;
     }
 
-    setPlayedCharsIds((prev) => [...prev, playedId]);
-    setAnimeCharacters((prev) => getShuffledArray(prev));
+    let nextPlayed = [...playedCharsIds, playedId];
+
+    if (nextPlayed.length > 0) {
+      let elementsToShow = getShuffledArray(animeCharacters).slice(
+        0,
+        CHACTERS_SHOW,
+      );
+      while (!elementsToShow.some((elem) => nextPlayed.includes(elem.id))) {
+        elementsToShow = getShuffledArray(allAnimeCharacters.current).slice(
+          0,
+          CHACTERS_SHOW,
+        );
+      }
+
+      setPlayedCharsIds(nextPlayed);
+      setAnimeCharacters(elementsToShow);
+    }
   }
 
   function handleGameResultBtn(type) {
@@ -52,6 +68,9 @@ function App() {
       setGameResult(null);
     }
   }
+
+  //Set characters to show while playing
+  const CHACTERS_SHOW = 2;
 
   // fetch anime info on load
   useEffect(() => {
@@ -68,13 +87,21 @@ function App() {
   // fetch characters from the selected anime after the user clicks the start game button and starts the game
   useEffect(() => {
     if (selectedAnime && gameStarted) {
-      fetchAnimeCharacters(setLoading, setAnimeCharacters, selectedAnime);
+      setLoading(true);
+      (async function () {
+        allAnimeCharacters.current = await fetchAnimeCharacters(selectedAnime);
+        setAnimeCharacters(allAnimeCharacters.current.slice(0, CHACTERS_SHOW));
+      })();
+      setLoading(false);
     }
   }, [gameStarted]);
 
   // Check if player won
   useEffect(() => {
-    if (gameStarted && playedCharsIds.length === animeCharacters.length) {
+    if (
+      gameStarted &&
+      playedCharsIds.length === allAnimeCharacters.current.length
+    ) {
       setGameResult(1);
       setGameStarted(false);
       setPlayedCharsIds([]);
@@ -132,6 +159,7 @@ function App() {
         manageClick={manageClick}
         animeCharacters={animeCharacters}
         playedCharsIds={playedCharsIds}
+        charsAmount={allAnimeCharacters.current.length}
       />
     );
   }
