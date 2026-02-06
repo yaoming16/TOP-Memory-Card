@@ -1,4 +1,6 @@
 const URL_BASE = "https://api.jikan.moe/v4/";
+const URL_TOP_ANIME = "top/anime?type=tv&limit=25"
+const ALL_ANIME = "anime?type=tv"
 
 //Function to fetch data
 async function fetchData(url) {
@@ -19,7 +21,7 @@ export async function fetchAnimesInfo(
   originalAnimeInfoRef,
 ) {
   setLoading(true);
-  const data = await fetchData(URL_BASE + "top/anime?type=tv");
+  const data = await fetchData(URL_BASE + URL_TOP_ANIME);
   if (data) {
     let formatedAnimeInfo = [];
     for (let anime of data.data) {

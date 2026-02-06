@@ -30,6 +30,7 @@ function App() {
   const [playedCharsIds, setPlayedCharsIds] = useState([]);
   const [gameResult, setGameResult] = useState(null);
   const allAnimeCharacters = useRef([]);
+  const targetScroll = useRef(null);
 
   function manageClick(playedId) {
     if (playedCharsIds.some((charId) => charId === playedId)) {
@@ -82,6 +83,12 @@ function App() {
     if (selectedAnime) {
       setGameStartedError(false);
     }
+    if (targetScroll.current) {
+      targetScroll.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      }) 
+    }
   }, [selectedAnime]);
 
   // fetch characters from the selected anime after the user clicks the start game button and starts the game
@@ -114,7 +121,7 @@ function App() {
   //return if game is loading
   if (loading) {
     content = (
-      <div className="loading-container">
+      <div className="loading-container" >
         <div className="loading-spinner"></div>
         <p>Loading...</p>
       </div>
@@ -125,7 +132,7 @@ function App() {
   if (!loading && !gameStarted && !gameResult) {
     content = (
       <>
-        <section className="top-section">
+        <section id="topSection" className="top-section" ref={targetScroll}>
           <SelectionSection
             selectedAnime={selectedAnime}
             setAnimesInfo={setAnimesInfo}
