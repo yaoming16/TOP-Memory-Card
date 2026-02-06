@@ -113,7 +113,12 @@ function App() {
   let content;
   //return if game is loading
   if (loading) {
-    content = <p>Loading...</p>;
+    content = (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading...</p>
+      </div>
+    );
   }
 
   // return if

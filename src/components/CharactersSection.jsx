@@ -8,9 +8,10 @@ function CharactersSection({
 }) {
   return (
     <section className="cards-section characters-section">
-      <p>
-        Score: {playedCharsIds.length}/{charsAmount}
-      </p>
+      <div className="score-display">
+        <span className="score-label">Score:</span>
+        <span className="score-value">{playedCharsIds.length}/{charsAmount}</span>
+      </div>
       {animeCharacters.map((char) => (
         <CharacterCard
           key={`character-${char.id}`}

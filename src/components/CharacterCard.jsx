@@ -1,13 +1,13 @@
 function CharacterCard({ characterInfo, manageClick }) {
   return (
-    <div className="card-div">
+    <div className="character-card-wrapper">
       <button
-        className="card-div"
+        className="character-card-button"
         onClick={() => manageClick(characterInfo.id)}
       >
-        <img src={characterInfo.imageUrl} />
+        <img src={characterInfo.imageUrl} alt={characterInfo.name} />
       </button>
-      <p>{characterInfo.name}</p>
+      <p className="character-name">{characterInfo.name}</p>
     </div>
   );
 }
