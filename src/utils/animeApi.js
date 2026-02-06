@@ -1,6 +1,6 @@
 const URL_BASE = "https://api.jikan.moe/v4/";
-const URL_TOP_ANIME = "top/anime?type=tv&limit=25"
-const ALL_ANIME = "anime?type=tv"
+const URL_TOP_ANIME = "top/anime?type=tv&limit=25";
+const ALL_ANIME = "anime?type=tv";
 
 //Function to fetch data
 async function fetchData(url) {
@@ -15,12 +15,15 @@ async function fetchData(url) {
 }
 
 // Function to fetch and save anime info in the desired format
-export async function fetchAnimesInfo(
-  setAnimesInfo,
-  setLoading,
-  originalAnimeInfoRef,
-) {
-  setLoading(true);
+export async function fetchAnimesInfo() {
+  // If already stored in session storage
+  const storage = sessionStorage.getItem("topAnime");
+  if (storage) {
+    return JSON.parse(storage);
+  }
+
+  // If not in storage
+  console.log("fetching animes");
   const data = await fetchData(URL_BASE + URL_TOP_ANIME);
   if (data) {
     let formatedAnimeInfo = [];
@@ -31,14 +34,22 @@ export async function fetchAnimesInfo(
         title: anime.title,
       });
     }
-    setAnimesInfo(formatedAnimeInfo);
-    originalAnimeInfoRef.current = formatedAnimeInfo;
-    setLoading(false);
+
+    sessionStorage.setItem("topAnime", JSON.stringify(formatedAnimeInfo));
+    return formatedAnimeInfo;
   }
 }
 
 // Function to fetch and save characters info from selected anime in the desired format
 export async function fetchAnimeCharacters(selectedAnime) {
+  // If already in session storage and the characters are from the selected anime
+  const storage = JSON.parse(sessionStorage.getItem("selectedCharacters"));
+  if (storage && storage.animeId === selectedAnime.id) {
+    return storage.formatedAnimeCharacters;
+  }
+
+  // If not in session storage
+  console.log("fetching characters");
   const data = await fetchData(
     URL_BASE + `anime/${selectedAnime.id}/characters`,
   );
@@ -51,6 +62,15 @@ export async function fetchAnimeCharacters(selectedAnime) {
         imageUrl: char.character.images.webp.image_url,
       });
     }
+
+    // We need to save the characters the user selected and also the animeId they are from
+    sessionStorage.setItem(
+      "selectedCharacters",
+      JSON.stringify({
+        formatedAnimeCharacters: formatedAnimeCharacters,
+        animeId: selectedAnime.id,
+      }),
+    );
     return formatedAnimeCharacters;
   }
 }

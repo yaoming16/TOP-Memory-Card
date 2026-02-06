@@ -75,7 +75,12 @@ function App() {
 
   // fetch anime info on load
   useEffect(() => {
-    fetchAnimesInfo(setAnimesInfo, setLoading, originalAnimeInfo);
+    (async function () {
+      setLoading(true);
+      originalAnimeInfo.current = await fetchAnimesInfo();
+      setAnimesInfo(originalAnimeInfo.current);
+      setLoading(false);
+    })();
   }, []);
 
   // After an anime is selected change game start error to false
@@ -85,23 +90,23 @@ function App() {
     }
     if (targetScroll.current) {
       targetScroll.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      }) 
+        behavior: "smooth",
+        block: "start",
+      });
     }
   }, [selectedAnime]);
 
   // fetch characters from the selected anime after the user clicks the start game button and starts the game
   useEffect(() => {
     if (selectedAnime && gameStarted) {
-      setLoading(true);
       (async function () {
+        setLoading(true);
         allAnimeCharacters.current = await fetchAnimeCharacters(selectedAnime);
         setAnimeCharacters(
           allAnimeCharacters.current.slice(0, CHARACTERS_SHOW),
         );
+        setLoading(false);
       })();
-      setLoading(false);
     }
   }, [gameStarted]);
 
@@ -121,7 +126,7 @@ function App() {
   //return if game is loading
   if (loading) {
     content = (
-      <div className="loading-container" >
+      <div className="loading-container">
         <div className="loading-spinner"></div>
         <p>Loading...</p>
       </div>
