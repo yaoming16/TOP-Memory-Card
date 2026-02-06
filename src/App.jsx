@@ -32,6 +32,15 @@ function App() {
   const allAnimeCharacters = useRef([]);
   const targetScroll = useRef(null);
 
+  // Slices the array only if large enough. This is to prevent the case that they are less characters than CHARACTERS_SHOW
+  function sliceIfLargeEnough(array, slicingLength) {
+    if (array.length > slicingLength) {
+      return array.slice(0, slicingLength);
+    } else {
+      return array;
+    }
+  }
+
   function manageClick(playedId) {
     if (playedCharsIds.some((charId) => charId === playedId)) {
       setGameResult(-1);
@@ -43,13 +52,13 @@ function App() {
     let nextPlayed = [...playedCharsIds, playedId];
 
     if (nextPlayed.length > 0) {
-      let elementsToShow = getShuffledArray(allAnimeCharacters.current).slice(
-        0,
+      let elementsToShow = sliceIfLargeEnough(
+        getShuffledArray(allAnimeCharacters.current),
         CHARACTERS_SHOW,
       );
       while (!elementsToShow.some((elem) => !nextPlayed.includes(elem.id))) {
-        elementsToShow = getShuffledArray(allAnimeCharacters.current).slice(
-          0,
+        elementsToShow = sliceIfLargeEnough(
+          getShuffledArray(allAnimeCharacters.current),
           CHARACTERS_SHOW,
         );
       }
@@ -103,7 +112,7 @@ function App() {
         setLoading(true);
         allAnimeCharacters.current = await fetchAnimeCharacters(selectedAnime);
         setAnimeCharacters(
-          allAnimeCharacters.current.slice(0, CHARACTERS_SHOW),
+          sliceIfLargeEnough(allAnimeCharacters.current, CHARACTERS_SHOW)
         );
         setLoading(false);
       })();
