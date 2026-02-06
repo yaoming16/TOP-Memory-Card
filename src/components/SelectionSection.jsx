@@ -16,7 +16,7 @@ function SelectionSection({ selectedAnime, setAnimesInfo, originalAnimeInfo }) {
   return (
     <section className="selected-section">
       <div className="centered">
-        <h3 className="">The selected anime is</h3>
+        <h3>The selected anime is</h3>
         {selectedAnime ? <AnimeCard animeInfo={selectedAnime} /> : null}
       </div>
       <div className="centered">

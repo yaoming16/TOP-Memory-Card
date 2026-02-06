@@ -52,38 +52,6 @@
     box-shadow: var(--shadow-md);
 }
 
-.card-div p {
-    text-align: center;
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    margin-top: 0.5rem;
-    font-weight: 500;
-}
-
-.characters-section .card-div {
-    padding: 1rem;
-}
-
-.characters-section .card-div img {
-    height: 180px;
-}
-
-.characters-section button.card-div {
-    background: transparent;
-    border: 2px solid var(--border-color);
-    padding: 0;
-    cursor: pointer;
-}
-
-.characters-section button.card-div:hover {
-    border-color: var(--accent-color);
-}
-
-.characters-section button.card-div img {
-    margin: 0;
-    border-radius: var(--radius-md);
-}
-
 /* Character Card Specific Styles */
 .character-card-wrapper {
     display: flex;

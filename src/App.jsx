@@ -5,11 +5,12 @@ import SelectionSection from "./components/SelectionSection";
 import GameResult from "./components/GameResult";
 import CharactersSection from "./components/CharactersSection";
 
+import { fetchAnimeCharacters, fetchAnimesInfo } from "./utils/animeApi";
 import {
-  fetchAnimeCharacters,
-  fetchAnimesInfo,
   getShuffledArray,
-} from "./utils/animeApi";
+  sliceIfLargeEnough,
+  sliceAFractionOfArrLength,
+} from "./utils/functions";
 
 import "./styles/App.css";
 import "./components/SelectionSection";
@@ -29,27 +30,27 @@ function App() {
   const [animeCharacters, setAnimeCharacters] = useState([]);
   const [playedCharsIds, setPlayedCharsIds] = useState([]);
   const [gameResult, setGameResult] = useState(null);
+  const [gameDifficulty, setGameDifficulty] = useState(1);
   const allAnimeCharacters = useRef([]);
   const targetScroll = useRef(null);
 
-  // Slices the array only if large enough. This is to prevent the case that they are less characters than CHARACTERS_SHOW
-  function sliceIfLargeEnough(array, slicingLength) {
-    if (array.length > slicingLength) {
-      return array.slice(0, slicingLength);
-    } else {
-      return array;
-    }
+  function resetGame(result) {
+    setGameResult(result);
+    setGameStarted(false);
+    setPlayedCharsIds([]);
   }
 
   function manageClick(playedId) {
     if (playedCharsIds.some((charId) => charId === playedId)) {
-      setGameResult(-1);
-      setGameStarted(false);
-      setPlayedCharsIds([]);
+      resetGame(-1);
       return;
     }
 
     let nextPlayed = [...playedCharsIds, playedId];
+    if (nextPlayed.length === allAnimeCharacters.current.length) {
+      resetGame(1);
+      return;
+    }
 
     if (nextPlayed.length > 0) {
       let elementsToShow = sliceIfLargeEnough(
@@ -111,25 +112,21 @@ function App() {
       (async function () {
         setLoading(true);
         allAnimeCharacters.current = await fetchAnimeCharacters(selectedAnime);
+
+        if (gameDifficulty < 1) {
+          allAnimeCharacters.current = sliceAFractionOfArrLength(
+            allAnimeCharacters.current,
+            gameDifficulty,
+          );
+        }
+
         setAnimeCharacters(
-          sliceIfLargeEnough(allAnimeCharacters.current, CHARACTERS_SHOW)
+          sliceIfLargeEnough(allAnimeCharacters.current, CHARACTERS_SHOW),
         );
         setLoading(false);
       })();
     }
   }, [gameStarted]);
-
-  // Check if player won
-  useEffect(() => {
-    if (
-      gameStarted &&
-      playedCharsIds.length === allAnimeCharacters.current.length
-    ) {
-      setGameResult(1);
-      setGameStarted(false);
-      setPlayedCharsIds([]);
-    }
-  }, [playedCharsIds]);
 
   let content;
   //return if game is loading
@@ -152,7 +149,9 @@ function App() {
             setAnimesInfo={setAnimesInfo}
             originalAnimeInfo={originalAnimeInfo}
           />
+
           <button
+          className="btn-primary center"
             onClick={() => {
               if (selectedAnime) {
                 setGameStarted(true);
@@ -165,8 +164,23 @@ function App() {
             Start the game
           </button>
           {gameStartedError ? (
-            <p>Please, select an anime before starting</p>
+            <p className="danger">Please, select an anime before starting</p>
           ) : null}
+
+          <div>
+            <p>Play with:</p>
+            <div className="btn-section">
+              <button onClick={() => setGameDifficulty(1 / 3)}  className={`${gameDifficulty === 1/3 ? 'active-btn' : ''} dif-btn`}>
+                A third of the Characters
+              </button>
+              <button onClick={() => setGameDifficulty(1 / 2)} className={`${gameDifficulty === 1/2 ? 'active-btn' : ''} dif-btn`}>
+                Half the Characters
+              </button>
+              <button onClick={() => setGameDifficulty(1)} className={`${gameDifficulty === 1 ? 'active-btn' : ''} dif-btn`}>
+                All the Characters
+              </button>
+            </div>
+          </div>
         </section>
         <section className="cards-section">
           {animesInfo.map((anime) => (
