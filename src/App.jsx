@@ -42,11 +42,11 @@ function App() {
     let nextPlayed = [...playedCharsIds, playedId];
 
     if (nextPlayed.length > 0) {
-      let elementsToShow = getShuffledArray(animeCharacters).slice(
+      let elementsToShow = getShuffledArray(allAnimeCharacters.current).slice(
         0,
         CHARACTERS_SHOW,
       );
-      while (!elementsToShow.some((elem) => nextPlayed.includes(elem.id))) {
+      while (!elementsToShow.some((elem) => !nextPlayed.includes(elem.id))) {
         elementsToShow = getShuffledArray(allAnimeCharacters.current).slice(
           0,
           CHARACTERS_SHOW,
@@ -70,7 +70,7 @@ function App() {
   }
 
   //Set characters to show while playing
-  const CHARACTERS_SHOW = 2;
+  const CHARACTERS_SHOW = 10;
 
   // fetch anime info on load
   useEffect(() => {
