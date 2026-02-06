@@ -44,12 +44,12 @@ function App() {
     if (nextPlayed.length > 0) {
       let elementsToShow = getShuffledArray(animeCharacters).slice(
         0,
-        CHACTERS_SHOW,
+        CHARACTERS_SHOW,
       );
       while (!elementsToShow.some((elem) => nextPlayed.includes(elem.id))) {
         elementsToShow = getShuffledArray(allAnimeCharacters.current).slice(
           0,
-          CHACTERS_SHOW,
+          CHARACTERS_SHOW,
         );
       }
 
@@ -70,7 +70,7 @@ function App() {
   }
 
   //Set characters to show while playing
-  const CHACTERS_SHOW = 2;
+  const CHARACTERS_SHOW = 2;
 
   // fetch anime info on load
   useEffect(() => {
@@ -90,7 +90,9 @@ function App() {
       setLoading(true);
       (async function () {
         allAnimeCharacters.current = await fetchAnimeCharacters(selectedAnime);
-        setAnimeCharacters(allAnimeCharacters.current.slice(0, CHACTERS_SHOW));
+        setAnimeCharacters(
+          allAnimeCharacters.current.slice(0, CHARACTERS_SHOW),
+        );
       })();
       setLoading(false);
     }
