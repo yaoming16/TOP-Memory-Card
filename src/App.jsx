@@ -144,52 +144,61 @@ function App() {
     content = (
       <>
         <section id="topSection" className="top-section" ref={targetScroll}>
+          <div>
+            <p>Play with:</p>
+            <div className="btn-section">
+              <button
+                onClick={() => setGameDifficulty(1 / 3)}
+                className={`${gameDifficulty === 1 / 3 ? "active-btn" : ""} dif-btn`}
+              >
+                A third of the Characters
+              </button>
+              <button
+                onClick={() => setGameDifficulty(1 / 2)}
+                className={`${gameDifficulty === 1 / 2 ? "active-btn" : ""} dif-btn`}
+              >
+                Half the Characters
+              </button>
+              <button
+                onClick={() => setGameDifficulty(1)}
+                className={`${gameDifficulty === 1 ? "active-btn" : ""} dif-btn`}
+              >
+                All the Characters
+              </button>
+            </div>
+            <button
+              className="btn-primary center"
+              onClick={() => {
+                if (selectedAnime) {
+                  setGameStarted(true);
+                  setGameStartedError(false);
+                } else {
+                  setGameStartedError(true);
+                }
+              }}
+            >
+              Start the game
+            </button>
+            {gameStartedError ? (
+              <p className="danger">Please, select an anime before starting</p>
+            ) : null}
+          </div>
+        </section>
+        <section className="cards-section">
           <SelectionSection
             selectedAnime={selectedAnime}
             setAnimesInfo={setAnimesInfo}
             originalAnimeInfo={originalAnimeInfo}
           />
-
-          <button
-          className="btn-primary center"
-            onClick={() => {
-              if (selectedAnime) {
-                setGameStarted(true);
-                setGameStartedError(false);
-              } else {
-                setGameStartedError(true);
-              }
-            }}
-          >
-            Start the game
-          </button>
-          {gameStartedError ? (
-            <p className="danger">Please, select an anime before starting</p>
-          ) : null}
-
-          <div>
-            <p>Play with:</p>
-            <div className="btn-section">
-              <button onClick={() => setGameDifficulty(1 / 3)}  className={`${gameDifficulty === 1/3 ? 'active-btn' : ''} dif-btn`}>
-                A third of the Characters
-              </button>
-              <button onClick={() => setGameDifficulty(1 / 2)} className={`${gameDifficulty === 1/2 ? 'active-btn' : ''} dif-btn`}>
-                Half the Characters
-              </button>
-              <button onClick={() => setGameDifficulty(1)} className={`${gameDifficulty === 1 ? 'active-btn' : ''} dif-btn`}>
-                All the Characters
-              </button>
-            </div>
+          <div className="cards-div">
+            {animesInfo.map((anime) => (
+              <AnimeCard
+                key={`anime-${anime.id}`}
+                animeInfo={anime}
+                setSelectedAnime={setSelectedAnime}
+              />
+            ))}
           </div>
-        </section>
-        <section className="cards-section">
-          {animesInfo.map((anime) => (
-            <AnimeCard
-              key={`anime-${anime.id}`}
-              animeInfo={anime}
-              setSelectedAnime={setSelectedAnime}
-            />
-          ))}
         </section>
       </>
     );
@@ -202,6 +211,7 @@ function App() {
         animeCharacters={animeCharacters}
         playedCharsIds={playedCharsIds}
         charsAmount={allAnimeCharacters.current.length}
+        resetGame={resetGame}
       />
     );
   }
