@@ -355,3 +355,29 @@ h1 {
   margin-right: auto;
   margin-top: 0.5rem;
 }
+
+/* Footer Styles */
+footer {
+  margin-top: auto;
+  padding: 2rem 1rem;
+  text-align: center;
+  color: white;
+  font-size: 0.95rem;
+}
+
+footer p {
+  margin: 0.5rem 0;
+}
+
+footer a {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+footer a:hover {
+  color: white;
+  text-shadow: 0 0 8px var(--accent-color);
+}

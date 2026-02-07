@@ -223,10 +223,34 @@ function App() {
   }
 
   return (
-    <main>
-      <h1>Anime Memory Game</h1>
-      {content}
-    </main>
+    <>
+      <main>
+        <h1>Anime Memory Game</h1>
+        {content}
+      </main>
+      <footer>
+        <p>
+          Created by
+          <a
+            href="https://github.com/yaoming16"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Pablo Perez
+          </a>
+        </p>
+        <p>
+          Learn more
+          <a
+            href="https://yaoming16.github.io/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            about me
+          </a>
+        </p>
+      </footer>
+    </>
   );
 }
 
